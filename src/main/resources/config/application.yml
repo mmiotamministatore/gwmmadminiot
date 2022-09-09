@@ -55,7 +55,7 @@ management:
           ]
   endpoint:
     health:
-      show-details: when_authorized
+      show-details: when-authorized
       roles: 'ROLE_ADMIN'
       probes:
         enabled: true
@@ -231,7 +231,7 @@ jhipster:
     contact-email:
     license: unlicensed
     license-url:
-  security:
+  
 # ===================================================================
 # Application specific properties
 # Add your own application properties here, see the ApplicationProperties class
