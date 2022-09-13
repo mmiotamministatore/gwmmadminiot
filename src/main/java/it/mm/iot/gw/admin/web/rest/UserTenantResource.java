@@ -13,13 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 import it.mm.iot.gw.admin.service.UserService;
 import it.mm.iot.gw.admin.service.dto.InfoUserOutput;
 import it.mm.iot.gw.admin.service.dto.InfoUserRequest;
-import it.mm.iot.gw.admin.web.message.OperationOutcome;
 import it.mm.iot.gw.admin.web.message.OutputMessageFactory;
 import it.mm.iot.gw.admin.web.rest.dto.InfoUserMessage;
 
 @RestController
 @RequestMapping("/api/iotgw/v1/user")
-public class UserTenantResource {
+public class UserTenantResource extends AbstractRestService {
 
 	@Autowired
 	private UserService userService;
@@ -30,8 +29,9 @@ public class UserTenantResource {
 	public ResponseEntity<InfoUserMessage<InfoUserOutput>> getUserInfoComplete(
 			@RequestBody InfoUserRequest infoUserRequest) {
 
-		InfoUserMessage<InfoUserOutput> out = userService.getInfoUser(infoUserRequest);
+		InfoUserOutput out = userService.getInfoUser(infoUserRequest);
+
 		return new ResponseEntity<>(
-				OutputMessageFactory.create(InfoUserMessage.class, out.getPayload(), out.getOutcome()), HttpStatus.OK);
+				OutputMessageFactory.create(InfoUserMessage.class, out, getOperationOutcomeAndRemove()), HttpStatus.OK);
 	}
 }

@@ -11,7 +11,7 @@ import it.mm.iot.gw.admin.service.exception.SeverityEnum;
 public class AbstractService {
 
 	@Autowired
-	private IssueOperationFactory issueOperationFactory;
+	protected IssueOperationFactory issueOperationFactory;
 
 	public AbstractService() {
 		super();
