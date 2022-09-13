@@ -36,7 +36,7 @@ class TokenProviderTest {
 
         SecurityMetersService securityMetersService = new SecurityMetersService(new SimpleMeterRegistry());
 
-        tokenProvider = new TokenProvider(jHipsterProperties, securityMetersService);
+        tokenProvider = new TokenProvider(jHipsterProperties);
         key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(base64Secret));
 
         ReflectionTestUtils.setField(tokenProvider, "key", key);
@@ -96,7 +96,7 @@ class TokenProviderTest {
 
         SecurityMetersService securityMetersService = new SecurityMetersService(new SimpleMeterRegistry());
 
-        TokenProvider tokenProvider = new TokenProvider(jHipsterProperties, securityMetersService);
+        TokenProvider tokenProvider = new TokenProvider(jHipsterProperties);
 
         Key key = (Key) ReflectionTestUtils.getField(tokenProvider, "key");
         assertThat(key).isNotNull().isEqualTo(Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8)));
@@ -110,7 +110,7 @@ class TokenProviderTest {
 
         SecurityMetersService securityMetersService = new SecurityMetersService(new SimpleMeterRegistry());
 
-        TokenProvider tokenProvider = new TokenProvider(jHipsterProperties, securityMetersService);
+        TokenProvider tokenProvider = new TokenProvider(jHipsterProperties );
 
         Key key = (Key) ReflectionTestUtils.getField(tokenProvider, "key");
         assertThat(key).isNotNull().isEqualTo(Keys.hmacShaKeyFor(Decoders.BASE64.decode(base64Secret)));

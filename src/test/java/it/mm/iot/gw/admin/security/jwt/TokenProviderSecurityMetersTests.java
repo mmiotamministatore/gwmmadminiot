@@ -43,7 +43,7 @@ class TokenProviderSecurityMetersTests {
 
         SecurityMetersService securityMetersService = new SecurityMetersService(meterRegistry);
 
-        tokenProvider = new TokenProvider(jHipsterProperties, securityMetersService);
+        tokenProvider = new TokenProvider(jHipsterProperties);
         Key key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(base64Secret));
 
         ReflectionTestUtils.setField(tokenProvider, "key", key);

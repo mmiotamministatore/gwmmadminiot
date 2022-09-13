@@ -246,6 +246,15 @@
             <artifactId>spring-security-messaging</artifactId>
         </dependency>
         <!-- jhipster-needle-maven-add-dependency -->
+         <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-sleuth</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>
@@ -517,7 +526,7 @@
                                 <arg>/entrypoint.sh</arg>
                             </entrypoint>
                             <ports>
-                                <port>8080</port>
+                                <port>9681</port>
                             </ports>
                             <environment>
                                 <SPRING_OUTPUT_ANSI_ENABLED>ALWAYS</SPRING_OUTPUT_ANSI_ENABLED>
