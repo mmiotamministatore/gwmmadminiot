@@ -5,11 +5,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import it.mm.iot.gw.admin.security.AuthoritiesConstants;
 import it.mm.iot.gw.admin.service.UserService;
 import it.mm.iot.gw.admin.service.dto.InfoUserOutput;
 import it.mm.iot.gw.admin.service.dto.InfoUserRequest;
@@ -26,6 +28,7 @@ public class UserTenantResource extends AbstractRestService {
 	private final Logger log = LoggerFactory.getLogger(UserTenantResource.class);
 
 	@PostMapping("/info")
+	//@PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
 	public ResponseEntity<InfoUserMessage<InfoUserOutput>> getUserInfoComplete(
 			@RequestBody InfoUserRequest infoUserRequest) {
 
