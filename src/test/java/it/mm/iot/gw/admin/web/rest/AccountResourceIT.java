@@ -1,20 +1,22 @@
 package it.mm.iot.gw.admin.web.rest;
 
 import static it.mm.iot.gw.admin.web.rest.AccountResourceIT.TEST_USER_LOGIN;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import it.mm.iot.gw.admin.IntegrationTest;
 import it.mm.iot.gw.admin.security.AuthoritiesConstants;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.test.web.servlet.MockMvc;
 
 /**
  * Integration tests for the {@link AccountResource} REST controller.
  */
-@AutoConfigureWebTestClient(timeout = IntegrationTest.DEFAULT_TIMEOUT)
+@AutoConfigureMockMvc
 @WithMockUser(value = TEST_USER_LOGIN)
 @IntegrationTest
 class AccountResourceIT {
@@ -22,51 +24,40 @@ class AccountResourceIT {
     static final String TEST_USER_LOGIN = "test";
 
     @Autowired
-    private WebTestClient accountWebTestClient;
+    private MockMvc restAccountMockMvc;
 
     @Test
     @WithMockUser(username = TEST_USER_LOGIN, authorities = AuthoritiesConstants.ADMIN)
-    void testGetExistingAccount() {
-        accountWebTestClient
-            .get()
-            .uri("/api/account")
-            .accept(MediaType.APPLICATION_JSON)
-            .exchange()
-            .expectStatus()
-            .isOk()
-            .expectHeader()
-            .contentType(MediaType.APPLICATION_JSON)
-            .expectBody()
-            .jsonPath("$.login")
-            .isEqualTo(TEST_USER_LOGIN)
-            .jsonPath("$.authorities")
-            .isEqualTo(AuthoritiesConstants.ADMIN);
+    void testGetExistingAccount() throws Exception {
+        restAccountMockMvc
+            .perform(get("/api/account").accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.login").value(TEST_USER_LOGIN))
+            .andExpect(jsonPath("$.authorities").value(AuthoritiesConstants.ADMIN));
     }
 
     @Test
     @WithUnauthenticatedMockUser
-    void testNonAuthenticatedUser() {
-        accountWebTestClient
-            .get()
-            .uri("/api/authenticate")
-            .accept(MediaType.APPLICATION_JSON)
-            .exchange()
-            .expectStatus()
-            .isOk()
-            .expectBody()
-            .isEmpty();
+    void testNonAuthenticatedUser() throws Exception {
+        restAccountMockMvc
+            .perform(get("/api/authenticate").accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().string(""));
     }
 
     @Test
-    void testAuthenticatedUser() {
-        accountWebTestClient
-            .get()
-            .uri("/api/authenticate")
-            .accept(MediaType.APPLICATION_JSON)
-            .exchange()
-            .expectStatus()
-            .isOk()
-            .expectBody(String.class)
-            .isEqualTo(TEST_USER_LOGIN);
+    void testAuthenticatedUser() throws Exception {
+        restAccountMockMvc
+            .perform(
+                get("/api/authenticate")
+                    .with(request -> {
+                        request.setRemoteUser(TEST_USER_LOGIN);
+                        return request;
+                    })
+                    .accept(MediaType.APPLICATION_JSON)
+            )
+            .andExpect(status().isOk())
+            .andExpect(content().string(TEST_USER_LOGIN));
     }
 }

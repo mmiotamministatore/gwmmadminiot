@@ -1,42 +1,49 @@
 package it.mm.iot.gw.admin.config;
 
+import javax.servlet.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cloud.stream.annotation.EnableBinding;
+import org.springframework.boot.web.server.*;
+import org.springframework.boot.web.servlet.ServletContextInitializer;
+import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
-import org.springframework.http.codec.ServerCodecConfigurer;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.reactive.CorsWebFilter;
-import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
-import org.springframework.web.reactive.config.WebFluxConfigurer;
-import org.springframework.web.server.WebExceptionHandler;
-import org.zalando.problem.spring.webflux.advice.ProblemExceptionHandler;
-import org.zalando.problem.spring.webflux.advice.ProblemHandling;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 import tech.jhipster.config.JHipsterProperties;
 
 /**
  * Configuration of web application with Servlet 3.0 APIs.
  */
-@EnableBinding({ KafkaSseConsumer.class, KafkaSseProducer.class })
 @Configuration
-public class WebConfigurer implements WebFluxConfigurer {
+public class WebConfigurer implements ServletContextInitializer {
 
     private final Logger log = LoggerFactory.getLogger(WebConfigurer.class);
 
+    private final Environment env;
+
     private final JHipsterProperties jHipsterProperties;
 
-    public WebConfigurer(JHipsterProperties jHipsterProperties) {
+    public WebConfigurer(Environment env, JHipsterProperties jHipsterProperties) {
+        this.env = env;
         this.jHipsterProperties = jHipsterProperties;
     }
-   
+
+    @Override
+    public void onStartup(ServletContext servletContext) throws ServletException {
+        if (env.getActiveProfiles().length != 0) {
+            log.info("Web application configuration, using profiles: {}", (Object[]) env.getActiveProfiles());
+        }
+
+        log.info("Web application fully configured");
+    }
+
     @Bean
-    public CorsWebFilter corsFilter() {
+    public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = jHipsterProperties.getCors();
         if (!CollectionUtils.isEmpty(config.getAllowedOrigins()) || !CollectionUtils.isEmpty(config.getAllowedOriginPatterns())) {
@@ -45,16 +52,7 @@ public class WebConfigurer implements WebFluxConfigurer {
             source.registerCorsConfiguration("/management/**", config);
             source.registerCorsConfiguration("/v3/api-docs", config);
             source.registerCorsConfiguration("/swagger-ui/**", config);
-            source.registerCorsConfiguration("/*/api/**", config);
-            source.registerCorsConfiguration("/services/*/api/**", config);
-            source.registerCorsConfiguration("/*/management/**", config);
         }
-        return new CorsWebFilter(source);
-    }
-
-    @Bean
-    @Order(-2) // The handler must have precedence over WebFluxResponseStatusExceptionHandler and Spring Boot's ErrorWebExceptionHandler
-    public WebExceptionHandler problemExceptionHandler(ObjectMapper mapper, ProblemHandling problemHandling) {
-        return new ProblemExceptionHandler(mapper, problemHandling);
+        return new CorsFilter(source);
     }
 }

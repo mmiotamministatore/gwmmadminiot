@@ -42,7 +42,7 @@ public class ExceptionTranslatorTestController {
 
     public static class TestDTO {
 
-        @NotNull(message = "must not be null")
+        @NotNull
         private String test;
 
         public String getTest() {

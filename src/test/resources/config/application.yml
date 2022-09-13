@@ -16,31 +16,6 @@
 spring:
   application:
     name: gwmmadminiot
-  autoconfigure:
-    exclude:
-      - org.springframework.cloud.gateway.config.GatewayMetricsAutoConfiguration
-  cloud:
-    consul:
-      discovery:
-        enabled: false
-        instanceId: ${spring.application.name}:${spring.application.instance-id:${random.value}}
-      config:
-        enabled: false
-      enabled: false
-    stream:
-      kafka:
-        binder:
-          replicationFactor: 1
-          auto-create-topics: true
-        bindings:
-          binding-in-sse:
-            destination: sse-topic
-            content-type: text/plain
-            group: gwmmadminiot
-          binding-out-sse:
-            destination: sse-topic
-            content-type: text/plain
-            group: gwmmadminiot
   jackson:
     serialization:
       write-durations-as-timestamps: false
@@ -48,6 +23,9 @@ spring:
     host: localhost
   main:
     allow-bean-definition-overriding: true
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
   messages:
     basename: i18n/messages
   security:
@@ -95,7 +73,7 @@ jhipster:
     authentication:
       jwt:
         # This token must be encoded using Base64 (you can type `echo 'secret-key'|base64` on your command line)
-        base64-secret: NDUxNTc4YjM2MjViYmUzYzg5NWQxZWY4YTc1Y2UxYjYyNDY0OWJhOGI2NDdmZTlmM2ZkMWFkZWUyZmJmZDc1MTU1NTkyYjJkYTZmOTMzMmU3M2FmY2FhYTc4ODQ0OTUwMjRhODRlMGU3YmYzMmU0YjAyYThjNTZkNDRhYTU1NGI=
+        base64-secret: MjZkMGUxY2RlZTBmMTk4MzE3MTgzNmJjZGJkZmNhZDQ4MmE2ZGI0ZGYxMjNiZTkxMjFlYmI3MzM4ZDkxMzg1NWQ2ODBmZmJlMzEzNzA3NWM3YjgzOTIwNWJjMWJjNWYyNDU0ZjZmZTM2NWIyNTg3MzRmMmU5NmExOTc0YWEyN2U=
         # Token is valid 24 hours
         token-validity-in-seconds: 86400
 

@@ -24,16 +24,6 @@ springdoc:
   api-docs:
     enabled: false
 ---
-reactive:
-  feign:
-    circuit:
-      breaker:
-        enabled: true
-  # client:
-  #   config:
-  #     default:
-  #       connectTimeout: 5000
-  #       readTimeout: 5000
 management:
   endpoints:
     web:
@@ -43,7 +33,6 @@ management:
           [
             'configprops',
             'env',
-            'gateway',
             'health',
             'info',
             'jhimetrics',
@@ -52,10 +41,11 @@ management:
             'loggers',
             'prometheus',
             'threaddump',
+            'caches',
           ]
   endpoint:
     health:
-      show-details: when-authorized
+      show-details: when_authorized
       roles: 'ROLE_ADMIN'
       probes:
         enabled: true
@@ -102,49 +92,6 @@ management:
 spring:
   application:
     name: gwmmadminiot
-  cloud:
-    consul:
-      discovery:
-        healthCheckPath: /management/health
-        instanceId: gwmmadminiot:${spring.application.instance-id:${random.value}}
-        service-name: gwmmadminiot
-      config:
-        watch:
-          enabled: false
-    gateway:
-      default-filters:
-        - JWTRelay
-      discovery:
-        locator:
-          enabled: true
-          lower-case-service-id: true
-          predicates:
-            - name: Path
-              args:
-                pattern: "'/services/'+serviceId.toLowerCase()+'/**'"
-          filters:
-            - name: RewritePath
-              args:
-                regexp: "'/services/' + serviceId.toLowerCase() + '/(?<remaining>.*)'"
-                replacement: "'/${remaining}'"
-      httpclient:
-        pool:
-          max-connections: 1000
-    stream:
-      kafka:
-        binder:
-          replicationFactor: 1
-          auto-create-topics: true
-          brokers: localhost:9092
-      bindings:
-        binding-in-sse:
-          destination: sse-topic
-          content-type: text/plain
-          group: gwmmadminiot
-        binding-out-sse:
-          destination: sse-topic
-          content-type: text/plain
-          group: gwmmadminiot
   profiles:
     # The commented value for `active` can be replaced with valid Spring profiles to load.
     # Otherwise, it will be filled in by maven when building the JAR file
@@ -162,6 +109,9 @@ spring:
     basename: i18n/messages
   main:
     allow-bean-definition-overriding: true
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
   security:
     user:
       name: admin
@@ -231,7 +181,7 @@ jhipster:
     contact-email:
     license: unlicensed
     license-url:
-  
+  security:
 # ===================================================================
 # Application specific properties
 # Add your own application properties here, see the ApplicationProperties class

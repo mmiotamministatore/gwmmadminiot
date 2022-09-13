@@ -1,20 +1,17 @@
 package it.mm.iot.gw.admin.web.rest;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import java.security.Principal;
+import it.mm.iot.gw.admin.security.SecurityUtils;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.ReactiveSecurityContextHolder;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ServerWebExchange;
-import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/api")
@@ -31,27 +28,16 @@ public class AccountResource {
      * @throws AccountResourceException {@code 500 (Internal Server Error)} if the user couldn't be returned.
      */
     @GetMapping("/account")
-    public Mono<UserVM> getAccount() {
-        return ReactiveSecurityContextHolder
+    public UserVM getAccount() {
+        String login = SecurityUtils.getCurrentUserLogin().orElseThrow(AccountResourceException::new);
+        Set<String> authorities = SecurityContextHolder
             .getContext()
-            .map(SecurityContext::getAuthentication)
-            .map(authentication -> {
-                String login;
-                if (authentication.getPrincipal() instanceof UserDetails) {
-                    login = ((UserDetails) authentication.getPrincipal()).getUsername();
-                } else if (authentication.getPrincipal() instanceof String) {
-                    login = (String) authentication.getPrincipal();
-                } else {
-                    throw new AccountResourceException();
-                }
-                Set<String> authorities = authentication
-                    .getAuthorities()
-                    .stream()
-                    .map(GrantedAuthority::getAuthority)
-                    .collect(Collectors.toSet());
-                return new UserVM(login, authorities);
-            })
-            .switchIfEmpty(Mono.error(new AccountResourceException()));
+            .getAuthentication()
+            .getAuthorities()
+            .stream()
+            .map(GrantedAuthority::getAuthority)
+            .collect(Collectors.toSet());
+        return new UserVM(login, authorities);
     }
 
     /**
@@ -61,9 +47,9 @@ public class AccountResource {
      * @return the login if the user is authenticated.
      */
     @GetMapping("/authenticate")
-    public Mono<String> isAuthenticated(ServerWebExchange request) {
+    public String isAuthenticated(HttpServletRequest request) {
         log.debug("REST request to check if the current user is authenticated");
-        return request.getPrincipal().map(Principal::getName);
+        return request.getRemoteUser();
     }
 
     private static class UserVM {
