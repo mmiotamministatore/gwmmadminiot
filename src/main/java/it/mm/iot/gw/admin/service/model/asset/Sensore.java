@@ -1,14 +1,15 @@
 package it.mm.iot.gw.admin.service.model.asset;
 
 public class Sensore extends Asset{
-	private String nome;
+	private String idDispositivo;
 
-	public String getNome() {
-		return nome;
+	public String getIdDispositivo() {
+		return idDispositivo;
 	}
 
-	public void setNome(String nome) {
-		this.nome = nome;
+	public void setIdDispositivo(String idDispositivo) {
+		this.idDispositivo = idDispositivo;
 	}
+
 
 }

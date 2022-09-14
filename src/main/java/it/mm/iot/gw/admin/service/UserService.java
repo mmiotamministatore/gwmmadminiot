@@ -13,6 +13,10 @@ import it.mm.iot.gw.admin.service.model.TenantInfo;
 import it.mm.iot.gw.admin.service.model.asset.Contenitore;
 import it.mm.iot.gw.admin.service.model.asset.Organizzazione;
 import it.mm.iot.gw.admin.service.model.asset.Sensore;
+import it.mm.iot.gw.admin.service.model.asset.SensoreAmbienteParete;
+import it.mm.iot.gw.admin.service.model.asset.SensoreArmadioRack;
+import it.mm.iot.gw.admin.service.model.asset.SensoreEnergia;
+import it.mm.iot.gw.admin.service.model.asset.SensoreStazioneMeteo;
 import it.mm.iot.gw.admin.service.model.asset.Sito;
 
 @Service
@@ -44,12 +48,31 @@ public class UserService extends AbstractService {
 		Contenitore room11=assetFactory.newInstance(Contenitore.class);	
 		room11.getInfo().setDescrizione("Main Room");
 		sito.addAsset(room11);
-		for (int i = 0; i < 4; i++) {
-			Sensore s1=assetFactory.newInstance(Sensore.class);
-			s1.getInfo().setDescrizione("S"+i);
-			room11.addAsset(s1);	
-		}
-
+		
+		SensoreEnergia se=assetFactory.newInstance(SensoreEnergia.class);
+		se.getInfo().setDescrizione("ANALIZZATORE RETE");
+		se.setIdDispositivo("MM_E_Meter-SB_XXX");
+		room11.addAsset(se);	
+		SensoreAmbienteParete sap=assetFactory.newInstance(SensoreAmbienteParete.class);
+		sap.getInfo().setDescrizione("SONDA AMBIENTE DA PARETE");
+		sap.setIdDispositivo("MM_E_SENSORE_BELIMO_XXX_XXX");
+		room11.addAsset(sap);	
+		SensoreArmadioRack sarh=assetFactory.newInstance(SensoreArmadioRack.class);
+		sarh.getInfo().setDescrizione("SONDA ARMADIO RACK HIGH");
+		sarh.setIdDispositivo("MM_E_SENSORE-Rack_XX-XX-High");
+		room11.addAsset(sarh);	
+		SensoreArmadioRack sarm=assetFactory.newInstance(SensoreArmadioRack.class);
+		sarm.getInfo().setDescrizione("SONDA ARMADIO RACK MID");
+		sarm.setIdDispositivo("MM_E_SENSORE-Rack_XX-XX-Mid");
+		room11.addAsset(sarm);	
+		SensoreArmadioRack sarl=assetFactory.newInstance(SensoreArmadioRack.class);
+		sarl.getInfo().setDescrizione("SONDA ARMADIO RACK LOW");
+		sarl.setIdDispositivo("MM_E_SENSORE-Rack_XX-XX-Low");
+		room11.addAsset(sarl);	
+		SensoreStazioneMeteo ssm=assetFactory.newInstance(SensoreStazioneMeteo.class);
+		ssm.getInfo().setDescrizione("STAZIONE METEO ESTERNA");
+		ssm.setIdDispositivo("MM_E_Stazione-Meteo");
+		room11.addAsset(ssm);	
 		
 		
 		Contenitore room12=assetFactory.newInstance(Contenitore.class);
