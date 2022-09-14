@@ -33,40 +33,59 @@ public class UserService extends AbstractService {
 		AssetTree assetTree = assetFactory.initAssetTree();
 		infoUser.setAssetTree(assetTree);
 
-		Organizzazione org = assetFactory.initOrganizzazione();
+		Organizzazione org = assetFactory.newInstance(Organizzazione.class);
 		org.getInfo().setDescrizione("Data Center Inc.");
 		assetTree.addAsset(org);
 		
-		Sito sito = assetFactory.initSito();
+		Sito sito = assetFactory.newInstance(Sito.class);
 		sito.getInfo().setDescrizione("Main Power");
 		org.addAsset(sito);
 		
-		Contenitore room11=new Contenitore();
-		Sensore s1=new Sensore();
-		room11.addAsset(s1);
-		Sensore s2=new Sensore();
-		room11.addAsset(s2);
-		
+		Contenitore room11=assetFactory.newInstance(Contenitore.class);	
+		room11.getInfo().setDescrizione("Main Room");
 		sito.addAsset(room11);
-		Contenitore room12=new Contenitore();
+		for (int i = 0; i < 4; i++) {
+			Sensore s1=assetFactory.newInstance(Sensore.class);
+			s1.getInfo().setDescrizione("S"+i);
+			room11.addAsset(s1);	
+		}
+
+		
+		
+		Contenitore room12=assetFactory.newInstance(Contenitore.class);
+		room12.getInfo().setDescrizione("Room 2");
 		sito.addAsset(room12);
 		
-		Sito sito2 = assetFactory.initSito();
-		sito2.getInfo().setDescrizione("UPS");
-		org.addAsset(sito2);
-		Contenitore room21=new Contenitore();
-		sito2.addAsset(room21);
-		Sensore s211=new Sensore();
-		room21.addAsset(s211);
-		Sensore s212=new Sensore();
-		room21.addAsset(s212);
 		
 
-		Sito sito3 = assetFactory.initSito();
+//		Sensore s2=assetFactory.newInstance(Sensore.class);
+//		s2.getInfo().setDescrizione("Sensore 1");
+//		room11.addAsset(s2);
+//		
+//
+//		Contenitore room12=assetFactory.newInstance(Contenitore.class);
+//		room12.getInfo().setDescrizione("Room 2");
+//		sito.addAsset(room12);
+//		
+//		Sito sito2 =  assetFactory.newInstance(Sito.class);
+//		sito2.getInfo().setDescrizione("UPS");
+//		org.addAsset(sito2);
+//		Contenitore room21=assetFactory.newInstance(Contenitore.class);
+//		room21.getInfo().setDescrizione("Room 1");
+//		sito2.addAsset(room21);
+//		Sensore s211=assetFactory.newInstance(Sensore.class);
+//		s211.getInfo().setDescrizione("Sensore 1_2");
+//		room21.addAsset(s211);
+//		Sensore s212=assetFactory.newInstance(Sensore.class);
+//		s212.getInfo().setDescrizione("Sensore 2_2");
+//		room21.addAsset(s212);
+//		
+
+		Sito sito3 =  assetFactory.newInstance(Sito.class);
 		sito3.getInfo().setDescrizione("Generator");
 		org.addAsset(sito3);
 
-		Sito sito4 = assetFactory.initSito();
+		Sito sito4 =  assetFactory.newInstance(Sito.class);
 		sito4.getInfo().setDescrizione("HVAC");
 		org.addAsset(sito4);
 		
