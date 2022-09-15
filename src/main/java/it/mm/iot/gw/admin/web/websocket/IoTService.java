@@ -43,4 +43,7 @@ public class IoTService implements ApplicationListener<SessionDisconnectEvent> {
         activityDTO.setPage("logout");
         messagingTemplate.convertAndSend("/topic/iot/secure/data", activityDTO);
     }
+    public void sendMessage(Object jsonMsg){
+        messagingTemplate.convertAndSend("/topic/iot/secure/data", jsonMsg);
+    }
 }
