@@ -30,6 +30,7 @@ public class WebsocketConfiguration implements WebSocketMessageBrokerConfigurer 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/topic");
+		config.setApplicationDestinationPrefixes("/app");
     }
 
     @Override
@@ -38,12 +39,27 @@ public class WebsocketConfiguration implements WebSocketMessageBrokerConfigurer 
             .ofNullable(jHipsterProperties.getCors().getAllowedOrigins())
             .map(origins -> origins.toArray(new String[0]))
             .orElse(new String[0]);
-        registry
-            .addEndpoint("/websocket/tracker")
-            .setHandshakeHandler(defaultHandshakeHandler())
-            .setAllowedOrigins(allowedOrigins)
-            .withSockJS()
-            .setInterceptors(httpSessionHandshakeInterceptor());
+//        registry
+//            .addEndpoint("/websocket/tracker")
+//            .setHandshakeHandler(defaultHandshakeHandler())
+//            .setAllowedOrigins(allowedOrigins)
+//            .withSockJS()
+//            .setInterceptors(httpSessionHandshakeInterceptor());
+//        registry.addEndpoint("/data");
+//        registry.addEndpoint("/data").withSockJS();
+//        registry.addEndpoint("/datawithbots");
+//        registry.addEndpoint("/datawithbots").withSockJS();
+        /***/
+        registry.addEndpoint("/iot/secure/data");
+        registry.addEndpoint("/iot/secure/data").setHandshakeHandler(defaultHandshakeHandler())
+        .setAllowedOrigins(allowedOrigins)
+        .withSockJS()
+        .setInterceptors(httpSessionHandshakeInterceptor());
+        registry.addEndpoint("/iot/secure/datawithbots");
+        registry.addEndpoint("/iot/secure/datawithbots").setHandshakeHandler(defaultHandshakeHandler())
+        .setAllowedOrigins(allowedOrigins)
+        .withSockJS()
+        .setInterceptors(httpSessionHandshakeInterceptor());
     }
 
     @Bean
