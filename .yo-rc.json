@@ -5,7 +5,7 @@
     "baseName": "gwmmadminiot",
     "blueprints": [],
     "buildTool": "maven",
-    "cacheProvider": "ehcache",
+    "cacheProvider": "hazelcast",
     "clientFramework": "no",
     "clientPackageManager": "npm",
     "clientTheme": "none",
