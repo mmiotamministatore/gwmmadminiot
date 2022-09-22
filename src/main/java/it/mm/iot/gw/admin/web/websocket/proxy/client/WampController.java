@@ -100,7 +100,7 @@ public class WampController {
 
     private void subscribeHandler(List<Object> args) {
         String data = (String) args.get(0);
-        log.info("Received via subscription: " + data);
+        //log.info("Received via subscription: " + data);
         assetEventManager.executeData(data);
 
         //		 this.messagingTemplate.convertAndSendToUser(

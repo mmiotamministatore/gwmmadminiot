@@ -29,13 +29,13 @@ public class AssetEventManager {
     public void executeData(String data) {
         try {
             SensorData sensorData = mapper.readValue(data, SensorData.class);
-            log.info("Dati Corretti: " + sensorData);
+            //log.info("Dati Corretti: " + sensorData);
             List<SensorMeasure> detailData = mapper.readValue(
                 sensorData.getJsonMessage(),
                 mapper.getTypeFactory().constructCollectionType(List.class, SensorMeasure.class)
             );
             sensorData.setDetailData(detailData);
-            log.info("Dati Corretti: " + detailData);
+            //log.info("Dati Corretti: " + detailData);
             //			if(detailData instanceof List) {
             //
             //				List<Map> lista=(List) detailData;

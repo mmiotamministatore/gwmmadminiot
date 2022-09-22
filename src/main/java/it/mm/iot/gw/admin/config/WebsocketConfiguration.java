@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -78,6 +80,7 @@ public class WebsocketConfiguration implements WebSocketMessageBrokerConfigurer 
 
     @Bean
     public HandshakeInterceptor httpSessionHandshakeInterceptor() {
+        final String X_AUTH_TOKEN = "x-auth-token";
         return new HandshakeInterceptor() {
             @Override
             public boolean beforeHandshake(
@@ -89,8 +92,12 @@ public class WebsocketConfiguration implements WebSocketMessageBrokerConfigurer 
                 if (request instanceof ServletServerHttpRequest) {
                     ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;
                     attributes.put(IP_ADDRESS, servletRequest.getRemoteAddress());
-                    HttpSession session = servletRequest.getServletRequest().getSession();
+                    HttpServletRequest httpServletRequest = servletRequest.getServletRequest();
+                    HttpSession session = httpServletRequest.getSession();
                     attributes.put(SESSIONID, session.getId());
+
+                    String token = httpServletRequest.getParameter(X_AUTH_TOKEN);
+                    log.info("HTTP ParameterNames: " + ToStringBuilder.reflectionToString(httpServletRequest.getParameterNames()));
                 }
                 return true;
             }
@@ -102,7 +109,7 @@ public class WebsocketConfiguration implements WebSocketMessageBrokerConfigurer 
                 WebSocketHandler wsHandler,
                 Exception exception
             ) {
-                log.info("ECCOLO afterHandshake");
+                //log.info("ECCOLO afterHandshake"+ToStringBuilder.reflectionToString(request.getHeaders()));
             }
         };
     }

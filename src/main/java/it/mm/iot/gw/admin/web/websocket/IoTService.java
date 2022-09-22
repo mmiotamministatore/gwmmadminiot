@@ -1,7 +1,5 @@
 package it.mm.iot.gw.admin.web.websocket;
 
-import static it.mm.iot.gw.admin.config.WebsocketConfiguration.IP_ADDRESS;
-
 import it.mm.iot.gw.admin.security.AuthenticationFacade;
 import it.mm.iot.gw.admin.service.dto.InfoUserOutput;
 import it.mm.iot.gw.admin.web.message.OutputPayload;
@@ -9,18 +7,16 @@ import it.mm.iot.gw.admin.web.rest.AbstractRestService;
 import it.mm.iot.gw.admin.web.websocket.dto.ActivityDTO;
 import java.security.Principal;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.Date;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.annotation.SendToUser;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
@@ -54,7 +50,7 @@ public class IoTService extends AbstractRestService implements ApplicationListen
 
     @Override
     public void onApplicationEvent(SessionDisconnectEvent event) {
-        log.info("ECCOLO onApplicationEvent", event);
+        log.info("ECCOLO onApplicationEvent" + ToStringBuilder.reflectionToString(event));
         ActivityDTO activityDTO = new ActivityDTO();
         activityDTO.setSessionId(event.getSessionId());
         activityDTO.setPage("logout");
