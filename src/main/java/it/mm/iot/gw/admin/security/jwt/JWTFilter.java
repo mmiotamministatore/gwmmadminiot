@@ -4,13 +4,11 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Iterator;
-
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
@@ -46,11 +44,11 @@ public class JWTFilter extends GenericFilterBean {
     }
 
     private String resolveToken(HttpServletRequest request) {
-    	for (Iterator iterator = request.getHeaderNames().asIterator(); iterator.hasNext();) {
-			String type = (String) iterator.next();
-			System.out.println("\nEccolo "+type);
-			
-		}
+        //for (Iterator iterator = request.getHeaderNames().asIterator(); iterator.hasNext();) {
+        //	String type = (String) iterator.next();
+        //	System.out.println("\nEccolo "+type);
+        //
+        //}
 
         String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
