@@ -104,10 +104,14 @@ public class UserService extends AbstractService {
 
         Sito sito3 = assetFactory.newInstance(Sito.class);
         sito3.getInfo().setDescrizione("Generator");
+        sito3.setBuildingInfo(assetFactory.loadBuildingInfo("DC_3M_R20"));
+
         org.addAsset(sito3);
 
         Sito sito4 = assetFactory.newInstance(Sito.class);
         sito4.getInfo().setDescrizione("HVAC");
+        sito4.setBuildingInfo(assetFactory.loadBuildingInfo("SampleHouseV3"));
+
         org.addAsset(sito4);
 
         return infoUser;

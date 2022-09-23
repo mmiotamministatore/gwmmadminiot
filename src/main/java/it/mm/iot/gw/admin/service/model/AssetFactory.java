@@ -91,8 +91,11 @@ public class AssetFactory {
     private String getDataResource(String id) {
         String data = null;
         try {
-            byte[] bytes = IOUtils.toByteArray(getStreamData(id));
-            data = base64.encodeToString(bytes);
+            InputStream is = getStreamData(id);
+            if (is != null) {
+                byte[] bytes = IOUtils.toByteArray(is);
+                data = base64.encodeToString(bytes);
+            }
         } catch (IOException ex) {
             issueOperationFactory.addIssue(SeverityEnum.FATAL, 0 + "", ex.getLocalizedMessage());
         }
