@@ -42,7 +42,7 @@ public class UserService extends AbstractService {
 
         Sito sito = assetFactory.newInstance(Sito.class);
         sito.getInfo().setDescrizione("Main Power");
-        sito.setBuildingInfo(assetFactory.loadBuildingInfo("DC_3M_R20_MEP"));
+        sito.setBuildingInfo(assetFactory.loadBuildingInfo("DC_3M_R20"));
 
         org.addAsset(sito);
 
@@ -104,7 +104,7 @@ public class UserService extends AbstractService {
 
         Sito sito3 = assetFactory.newInstance(Sito.class);
         sito3.getInfo().setDescrizione("Generator");
-        sito3.setBuildingInfo(assetFactory.loadBuildingInfo("DC_3M_R20"));
+        sito3.setBuildingInfo(assetFactory.loadBuildingInfo("DC_3M_R20_MEP"));
 
         org.addAsset(sito3);
 
