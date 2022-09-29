@@ -31,7 +31,7 @@ public class UserService extends AbstractService {
         /** Lettura info */
         InfoUserOutput infoUser = new InfoUserOutput();
         infoUser.setTenantInfo(new TenantInfo());
-        infoUser.getTenantInfo().setNomeAzienda("Azienda Demo");
+        infoUser.getTenantInfo().setNomeAzienda("MATICMIND");
         infoUser.getTenantInfo().setTenant(infoUserRequest.getTenant());
         AssetTree assetTree = assetFactory.initAssetTree();
         infoUser.setAssetTree(assetTree);
