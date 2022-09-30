@@ -40,15 +40,34 @@ public class UserService extends AbstractService {
         Pagina cruscotto = assetFactory.newInstance(Pagina.class);
         cruscotto.getInfo().setDescrizione("Cruscotto");
         cruscotto.setUri("/dashboards/home");
-        cruscotto.setIcon("Dashboard");
+        cruscotto.setIcon("DashboardOutlined");
         assetTree.addAsset(cruscotto);
         
         Pagina analisiPue = assetFactory.newInstance(Pagina.class);
         analisiPue.getInfo().setDescrizione("Analisi Pue");
         analisiPue.setUri("/dashboards/home");
-        analisiPue.setIcon("Dashboard");
+        analisiPue.setIcon("SpeedOutlined");
         assetTree.addAsset(analisiPue);
         
+        Pagina storicoPue = assetFactory.newInstance(Pagina.class);
+        storicoPue.getInfo().setDescrizione("Storico Pue");
+        storicoPue.setUri("/dashboards/home");
+        storicoPue.setIcon("SsidChartOutlined");
+        assetTree.addAsset(storicoPue);
+        
+        Pagina storicoEventi = assetFactory.newInstance(Pagina.class);
+        storicoEventi.getInfo().setDescrizione("Storico Eventi");
+        storicoEventi.setUri("/dashboards/home");
+        storicoEventi.setIcon("BlurLinearOutlined");
+        assetTree.addAsset(storicoEventi);
+        
+        Pagina digitalTwin = assetFactory.newInstance(Pagina.class);
+        digitalTwin.getInfo().setDescrizione("Digital Twin");
+        digitalTwin.setUri("/dashboards/home");
+        digitalTwin.setIcon("BusinessOutlined");
+        assetTree.addAsset(digitalTwin);
+
+                
         
         Organizzazione org = assetFactory.newInstance(Organizzazione.class);
         org.getInfo().setDescrizione("Data Center Inc.");
