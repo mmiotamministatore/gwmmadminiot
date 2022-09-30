@@ -1,5 +1,9 @@
 package it.mm.iot.gw.admin.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
+
 import it.mm.iot.gw.admin.service.dto.InfoUserOutput;
 import it.mm.iot.gw.admin.service.dto.InfoUserRequest;
 import it.mm.iot.gw.admin.service.exception.SeverityEnum;
@@ -8,15 +12,12 @@ import it.mm.iot.gw.admin.service.model.AssetTree;
 import it.mm.iot.gw.admin.service.model.TenantInfo;
 import it.mm.iot.gw.admin.service.model.asset.Contenitore;
 import it.mm.iot.gw.admin.service.model.asset.Organizzazione;
-import it.mm.iot.gw.admin.service.model.asset.Sensore;
+import it.mm.iot.gw.admin.service.model.asset.Pagina;
 import it.mm.iot.gw.admin.service.model.asset.SensoreAmbienteParete;
 import it.mm.iot.gw.admin.service.model.asset.SensoreArmadioRack;
 import it.mm.iot.gw.admin.service.model.asset.SensoreEnergia;
 import it.mm.iot.gw.admin.service.model.asset.SensoreStazioneMeteo;
 import it.mm.iot.gw.admin.service.model.asset.Sito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
 
 @Service
 @Validated
@@ -36,6 +37,19 @@ public class UserService extends AbstractService {
         AssetTree assetTree = assetFactory.initAssetTree();
         infoUser.setAssetTree(assetTree);
 
+        Pagina cruscotto = assetFactory.newInstance(Pagina.class);
+        cruscotto.getInfo().setDescrizione("Cruscotto");
+        cruscotto.setUri("/dashboards/home");
+        cruscotto.setIcon("Dashboard");
+        assetTree.addAsset(cruscotto);
+        
+        Pagina analisiPue = assetFactory.newInstance(Pagina.class);
+        analisiPue.getInfo().setDescrizione("Analisi Pue");
+        analisiPue.setUri("/dashboards/home");
+        analisiPue.setIcon("Dashboard");
+        assetTree.addAsset(analisiPue);
+        
+        
         Organizzazione org = assetFactory.newInstance(Organizzazione.class);
         org.getInfo().setDescrizione("Data Center Inc.");
         assetTree.addAsset(org);
