@@ -1,6 +1,7 @@
 package it.mm.iot.gw.admin.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
@@ -8,21 +9,30 @@ import it.mm.iot.gw.admin.service.dto.InfoUserOutput;
 import it.mm.iot.gw.admin.service.dto.InfoUserRequest;
 import it.mm.iot.gw.admin.service.exception.SeverityEnum;
 import it.mm.iot.gw.admin.service.feign.IotPlatformService;
+import it.mm.iot.gw.admin.service.feign.dto.IoTPlatformOutputMessage;
+import it.mm.iot.gw.admin.service.feign.dto.StatusResponseIoTEnum;
 import it.mm.iot.gw.admin.service.model.AssetFactory;
 import it.mm.iot.gw.admin.service.model.AssetTree;
 import it.mm.iot.gw.admin.service.model.TenantInfo;
 import it.mm.iot.gw.admin.service.model.asset.Contenitore;
 import it.mm.iot.gw.admin.service.model.asset.Organizzazione;
 import it.mm.iot.gw.admin.service.model.asset.Pagina;
+import it.mm.iot.gw.admin.service.model.asset.Sensore;
 import it.mm.iot.gw.admin.service.model.asset.SensoreAmbienteParete;
 import it.mm.iot.gw.admin.service.model.asset.SensoreArmadioRack;
 import it.mm.iot.gw.admin.service.model.asset.SensoreEnergia;
 import it.mm.iot.gw.admin.service.model.asset.SensoreStazioneMeteo;
 import it.mm.iot.gw.admin.service.model.asset.Sito;
+import it.mm.iot.gw.admin.service.model.event.SensorData;
 
 @Service
 @Validated
 public class UserService extends AbstractService {
+	
+    @Value("${app.iotmm.tenant.id:maticmind}")
+    private String tenantId;
+    @Value("${app.iotmm.tenant.description:MATICMIND}")
+    private String tenantDescription;
 
     @Autowired
     private AssetFactory assetFactory;
@@ -36,13 +46,14 @@ public class UserService extends AbstractService {
         /** Lettura info */
         InfoUserOutput infoUser = new InfoUserOutput();
         infoUser.setTenantInfo(new TenantInfo());
-        infoUser.getTenantInfo().setNomeAzienda("MATICMIND");
-        infoUser.getTenantInfo().setTenant(infoUserRequest.getTenant());
+        infoUser.getTenantInfo().setTenant(tenantId);
+        infoUser.getTenantInfo().setNomeAzienda(tenantDescription);
+        //infoUser.getTenantInfo().setTenant(infoUserRequest.getTenant());
         AssetTree assetTree = assetFactory.initAssetTree();
         infoUser.setAssetTree(assetTree);
         
         
-        String ritorno=iotPlatformService.getSensors(infoUserRequest.getTenant(), null);
+        IoTPlatformOutputMessage ritorno=iotPlatformService.getSensors(infoUser.getTenantInfo().getTenant(), null);
 
         Pagina cruscotto = assetFactory.newInstance(Pagina.class);
         cruscotto.getInfo().setDescrizione("Cruscotto");
@@ -89,6 +100,16 @@ public class UserService extends AbstractService {
         Contenitore room11 = assetFactory.newInstance(Contenitore.class);
         room11.getInfo().setDescrizione("Main Room");
         sito.addAsset(room11);
+        
+        if(ritorno.getResult()==StatusResponseIoTEnum.SUCCESS) {
+
+			for (SensorData row : ritorno.getRows()) {
+        		Sensore se = assetFactory.newInstance(Sensore.class);
+                se.getInfo().setDescrizione(row.getIdDispositivo());
+                se.setIdDispositivo(row.getIdDispositivo());
+                room11.addAsset(se);
+			}
+        }
 
         SensoreEnergia se = assetFactory.newInstance(SensoreEnergia.class);
         se.getInfo().setDescrizione("ANALIZZATORE RETE");

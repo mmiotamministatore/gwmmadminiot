@@ -43,7 +43,7 @@ public class WampController {
 
     private static final String PROCEDURE = "com.example.demowamp.procedure";
 
-    @Value("${pp.websocket.client.wamp.topics:com.example.demowamp.topic,test.analysis}")
+    @Value("${app.websocket.client.wamp.topics:com.example.demowamp.topic,test.analysis}")
     private String[] topics;
 
     private Executor executor;

@@ -97,4 +97,9 @@ jhipster:
 # ===================================================================
 
 # application:
-  
+app:
+  iotmm:
+    tenant:
+      id: maticmind
+      description: MATICMIND
+      
