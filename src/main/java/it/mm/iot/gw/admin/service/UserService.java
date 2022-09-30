@@ -7,6 +7,7 @@ import org.springframework.validation.annotation.Validated;
 import it.mm.iot.gw.admin.service.dto.InfoUserOutput;
 import it.mm.iot.gw.admin.service.dto.InfoUserRequest;
 import it.mm.iot.gw.admin.service.exception.SeverityEnum;
+import it.mm.iot.gw.admin.service.feign.IotPlatformService;
 import it.mm.iot.gw.admin.service.model.AssetFactory;
 import it.mm.iot.gw.admin.service.model.AssetTree;
 import it.mm.iot.gw.admin.service.model.TenantInfo;
@@ -25,6 +26,9 @@ public class UserService extends AbstractService {
 
     @Autowired
     private AssetFactory assetFactory;
+    
+    @Autowired
+	private IotPlatformService iotPlatformService;
 
     public InfoUserOutput getInfoUser(InfoUserRequest infoUserRequest) {
         issueOperationFactory.addIssue(SeverityEnum.INFORMATION, "IOT-I0001", "Prova");
@@ -36,6 +40,9 @@ public class UserService extends AbstractService {
         infoUser.getTenantInfo().setTenant(infoUserRequest.getTenant());
         AssetTree assetTree = assetFactory.initAssetTree();
         infoUser.setAssetTree(assetTree);
+        
+        
+        String ritorno=iotPlatformService.getSensors(infoUserRequest.getTenant(), null);
 
         Pagina cruscotto = assetFactory.newInstance(Pagina.class);
         cruscotto.getInfo().setDescrizione("Cruscotto");

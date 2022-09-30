@@ -34,6 +34,19 @@ spring:
     cache-duration: PT1S # 1 second, see the ISO 8601 standard
   thymeleaf:
     cache: false
+  security: 
+    oauth2:
+      client:
+        registration:
+          iotplatform:
+            authorization-grant-type: client_credentials
+            client-id: iotmind
+            client-secret: 9uyvrXSy5WSxnwZPMtdCuDHttDaGJJsb
+        provider:
+          iotplatform:
+            token-uri: http://10.92.1.2:8088/auth/realms/dev/protocol/openid-connect/token
+    
+    
 
 server:
   port: 9681
@@ -84,3 +97,4 @@ jhipster:
 # ===================================================================
 
 # application:
+  
