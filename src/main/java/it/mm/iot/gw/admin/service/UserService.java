@@ -39,31 +39,31 @@ public class UserService extends AbstractService {
 
         Pagina cruscotto = assetFactory.newInstance(Pagina.class);
         cruscotto.getInfo().setDescrizione("Cruscotto");
-        cruscotto.setUri("/dashboards/home");
+        cruscotto.setUri("/energy/dashboard");
         cruscotto.setIcon("DashboardOutlined");
         assetTree.addAsset(cruscotto);
         
         Pagina analisiPue = assetFactory.newInstance(Pagina.class);
         analisiPue.getInfo().setDescrizione("Analisi Pue");
-        analisiPue.setUri("/dashboards/home");
+        analisiPue.setUri("/energy/pueanalysis");
         analisiPue.setIcon("SpeedOutlined");
         assetTree.addAsset(analisiPue);
         
         Pagina storicoPue = assetFactory.newInstance(Pagina.class);
         storicoPue.getInfo().setDescrizione("Storico Pue");
-        storicoPue.setUri("/dashboards/home");
+        storicoPue.setUri("/energy/puestoric");
         storicoPue.setIcon("SsidChartOutlined");
         assetTree.addAsset(storicoPue);
         
         Pagina storicoEventi = assetFactory.newInstance(Pagina.class);
         storicoEventi.getInfo().setDescrizione("Storico Eventi");
-        storicoEventi.setUri("/dashboards/home");
+        storicoEventi.setUri("/energy/eventstoric");
         storicoEventi.setIcon("BlurLinearOutlined");
         assetTree.addAsset(storicoEventi);
         
         Pagina digitalTwin = assetFactory.newInstance(Pagina.class);
         digitalTwin.getInfo().setDescrizione("Digital Twin");
-        digitalTwin.setUri("/dashboards/home");
+        digitalTwin.setUri("/energy/digitaltwin");
         digitalTwin.setIcon("BusinessOutlined");
         assetTree.addAsset(digitalTwin);
 
