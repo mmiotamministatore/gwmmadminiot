@@ -28,9 +28,6 @@ import org.springframework.stereotype.Controller;
 public class WampController {
 
     @Autowired
-    private IoTService iotService;
-
-    @Autowired
     private AssetEventManager assetEventManager;
 
     private final Logger log = LoggerFactory.getLogger(WampController.class);
@@ -101,12 +98,8 @@ public class WampController {
     private void subscribeHandler(List<Object> args) {
         String data = (String) args.get(0);
         //log.info("Received via subscription: " + data);
-        assetEventManager.executeData(data);
+        assetEventManager.sendMessageUserSubscribed(data);
 
-        //		 this.messagingTemplate.convertAndSendToUser(
-        //	               "biro", "/topic/iot/secure/data/user", args.get(0));
-        String user = "4a3e1029-7943-49f6-9c21-8a32e83cbfd0";
-        iotService.sendMessageToUser(user, args.get(0));
     }
 
     public void publishExample(Session session, SessionDetails details) {

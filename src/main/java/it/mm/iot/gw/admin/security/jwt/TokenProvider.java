@@ -125,6 +125,14 @@ public class TokenProvider {
 		return new UsernamePasswordAuthenticationToken(principal, token, authorities);
 	}
 
+	public Claims getClaims(String token) {
+		Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+
+
+		return claims;
+	}
+
+	
 	public boolean validateToken(String authToken) {
 		try {
 			Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(authToken);

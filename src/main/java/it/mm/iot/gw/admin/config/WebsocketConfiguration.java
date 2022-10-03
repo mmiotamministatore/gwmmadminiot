@@ -1,18 +1,18 @@
 package it.mm.iot.gw.admin.config;
 
-import it.mm.iot.gw.admin.security.AuthoritiesConstants;
-import it.mm.iot.gw.admin.security.jwt.TokenProvider;
-import it.mm.iot.gw.admin.service.model.event.AssetEventManager;
-
 import java.security.Principal;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +40,11 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 import org.springframework.web.socket.server.support.DefaultHandshakeHandler;
+
+import io.jsonwebtoken.Claims;
+import it.mm.iot.gw.admin.security.AuthoritiesConstants;
+import it.mm.iot.gw.admin.security.jwt.TokenProvider;
+import it.mm.iot.gw.admin.service.model.event.AssetEventManager;
 import tech.jhipster.config.JHipsterProperties;
 
 @Configuration
@@ -108,6 +113,7 @@ public class WebsocketConfiguration implements WebSocketMessageBrokerConfigurer 
                 @Override
                 public Message<?> preSend(Message<?> message, MessageChannel channel) {
                     StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+                    log.info("ECCOLO STOMP COMMAND: "+accessor.getCommand());
                     if (StompCommand.CONNECT.equals(accessor.getCommand())) {
                     	 String authToken = accessor.getFirstNativeHeader(X_AUTH_TOKEN);
                          log.debug("webSocket token is {}", authToken);
@@ -115,13 +121,22 @@ public class WebsocketConfiguration implements WebSocketMessageBrokerConfigurer 
                          
                          if (StringUtils.hasText(authToken) && tokenProvider.validateToken(authToken)) {
                              Authentication authentication = tokenProvider.getAuthentication(authToken);
+                             Claims claims=tokenProvider.getClaims(authToken);
+                             Long dt=((Integer)claims.get(Claims.EXPIRATION)).longValue()*1000;
+                             LocalDateTime exp= new Date(dt).toInstant().atZone( ZoneId.systemDefault()).toLocalDateTime();
                              SecurityContextHolder.getContext().setAuthentication(authentication);
                              accessor.setUser(authentication);
-                             aem.subscribe(authentication.getName(), "");
+                             
+                             aem.subscribe(authentication.getName(),exp, "");
                          }
                          
 
                     }
+                    if (StompCommand.DISCONNECT.equals(accessor.getCommand())) {
+                        if (accessor.getUser()!=null) {
+                            //aem.unsubscribe(accessor.getUser().getName());
+                        }
+                   }
                     return message;
                 }
             }

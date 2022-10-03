@@ -1,5 +1,6 @@
 package it.mm.iot.gw.admin.service.model.event;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import it.mm.iot.gw.admin.web.events.IoTEvent;
 import it.mm.iot.gw.admin.web.events.IoTMeasureData;
 import it.mm.iot.gw.admin.web.events.IoTSubscribeUser;
+import it.mm.iot.gw.admin.web.events.IoTUnsubscribeUser;
 
 @Component
 public class AssetEventManager {
@@ -34,11 +36,53 @@ public class AssetEventManager {
 		assets.put(asset.getRef().getIdDispositivo(), asset);
 	}
 
-	public void subscribe(String user, String assetId) {
-		IoTSubscribeUser newSub= new IoTSubscribeUser();
+	public void subscribe(String user, LocalDateTime expDate, String assetId) {
+		IoTSubscribeUser newSub = new IoTSubscribeUser();
 		newSub.setUserName(user);
+		newSub.setExpirationDate(expDate);
 		IoTEvent<IoTSubscribeUser> eventIot = new IoTEvent<IoTSubscribeUser>(this, newSub);
 		publisher.publishEvent(eventIot);
+	}
+
+	public void unsubscribe(String user) {
+		IoTUnsubscribeUser unsUser = new IoTUnsubscribeUser();
+		unsUser.setUserName(user);
+		IoTEvent<IoTUnsubscribeUser> eventIot = new IoTEvent<IoTUnsubscribeUser>(this, unsUser);
+		publisher.publishEvent(eventIot);
+	}
+
+
+	public void sendMessageUserSubscribed(String data) {
+		try {
+			SensorData sensorData = mapper.readValue(data, SensorData.class);
+			// log.info("Dati Corretti: " + sensorData);
+			List<SensorMeasure> detailData = mapper.readValue(sensorData.getJsonMessage(),
+					mapper.getTypeFactory().constructCollectionType(List.class, SensorMeasure.class));
+			sensorData.setDetailData(detailData);
+
+			IoTMeasureData evtdata = new IoTMeasureData();
+			evtdata.setDetailData(detailData);
+			IoTEvent<IoTMeasureData> eventIot = new IoTEvent<IoTMeasureData>(this, evtdata);
+			publisher.publishEvent(eventIot);
+
+			// publisher.publishCustomEvent(data);
+			// log.info("Dati Corretti: " + detailData);
+			// if(detailData instanceof List) {
+			//
+			// List<Map> lista=(List) detailData;
+			// for (Map message : lista) {
+			// log.info("Dati Corretti: "+message);
+			// }
+			// }
+			// else {
+			//
+			// }
+
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			log.info("Dati non corretti: " + data);
+			e.printStackTrace();
+		}
 	}
 
 	public void executeData(String data) {
@@ -49,12 +93,12 @@ public class AssetEventManager {
 					mapper.getTypeFactory().constructCollectionType(List.class, SensorMeasure.class));
 			sensorData.setDetailData(detailData);
 
-			IoTMeasureData evtdata= new IoTMeasureData();
+			IoTMeasureData evtdata = new IoTMeasureData();
 			evtdata.setDetailData(detailData);
 			IoTEvent<IoTMeasureData> eventIot = new IoTEvent<IoTMeasureData>(this, evtdata);
 			publisher.publishEvent(eventIot);
-			
-			//publisher.publishCustomEvent(data);
+
+			// publisher.publishCustomEvent(data);
 			// log.info("Dati Corretti: " + detailData);
 			// if(detailData instanceof List) {
 			//
