@@ -1,6 +1,9 @@
 package it.mm.iot.gw.admin.config;
 
 import it.mm.iot.gw.admin.security.AuthoritiesConstants;
+import it.mm.iot.gw.admin.security.jwt.TokenProvider;
+import it.mm.iot.gw.admin.service.model.event.AssetEventManager;
+
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -12,6 +15,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.mapstruct.ap.internal.util.accessor.Accessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.ServerHttpRequest;
@@ -28,6 +32,8 @@ import org.springframework.messaging.support.MessageHeaderAccessor;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
@@ -44,6 +50,7 @@ public class WebsocketConfiguration implements WebSocketMessageBrokerConfigurer 
 
     public static final String IP_ADDRESS = "IP_ADDRESS";
     public static final String SESSIONID = "sessionId";
+    final String X_AUTH_TOKEN = "x-auth-token";
 
     private final JHipsterProperties jHipsterProperties;
 
@@ -87,6 +94,13 @@ public class WebsocketConfiguration implements WebSocketMessageBrokerConfigurer 
 
     }
 
+
+    @Autowired
+    private TokenProvider tokenProvider;
+    
+    @Autowired
+    private AssetEventManager aem;
+    
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(
@@ -95,8 +109,18 @@ public class WebsocketConfiguration implements WebSocketMessageBrokerConfigurer 
                 public Message<?> preSend(Message<?> message, MessageChannel channel) {
                     StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
                     if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-                        Authentication user = null; // ... ; // access authentication header(s)
-                        accessor.setUser(user);
+                    	 String authToken = accessor.getFirstNativeHeader(X_AUTH_TOKEN);
+                         log.debug("webSocket token is {}", authToken);
+                         
+                         
+                         if (StringUtils.hasText(authToken) && tokenProvider.validateToken(authToken)) {
+                             Authentication authentication = tokenProvider.getAuthentication(authToken);
+                             SecurityContextHolder.getContext().setAuthentication(authentication);
+                             accessor.setUser(authentication);
+                             aem.subscribe(authentication.getName(), "");
+                         }
+                         
+
                     }
                     return message;
                 }
@@ -106,7 +130,7 @@ public class WebsocketConfiguration implements WebSocketMessageBrokerConfigurer 
 
     @Bean
     public HandshakeInterceptor httpSessionHandshakeInterceptor() {
-        final String X_AUTH_TOKEN = "x-auth-token";
+
         return new HandshakeInterceptor() {
             @Override
             public boolean beforeHandshake(
