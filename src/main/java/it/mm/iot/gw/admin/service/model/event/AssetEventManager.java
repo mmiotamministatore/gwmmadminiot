@@ -61,8 +61,9 @@ public class AssetEventManager {
 			sensorData.setDetailData(detailData);
 
 			IoTMeasureData evtdata = new IoTMeasureData();
+			evtdata.setData(data);
 			evtdata.setDetailData(detailData);
-			IoTEvent<IoTMeasureData> eventIot = new IoTEvent<IoTMeasureData>(this, evtdata);
+			IoTEvent<SensorData> eventIot = new IoTEvent<SensorData>(this, sensorData);
 			publisher.publishEvent(eventIot);
 
 			// publisher.publishCustomEvent(data);
@@ -95,7 +96,8 @@ public class AssetEventManager {
 
 			IoTMeasureData evtdata = new IoTMeasureData();
 			evtdata.setDetailData(detailData);
-			IoTEvent<IoTMeasureData> eventIot = new IoTEvent<IoTMeasureData>(this, evtdata);
+			evtdata.setData(data);
+			IoTEvent<SensorData> eventIot = new IoTEvent<SensorData>(this, sensorData);
 			publisher.publishEvent(eventIot);
 
 			// publisher.publishCustomEvent(data);

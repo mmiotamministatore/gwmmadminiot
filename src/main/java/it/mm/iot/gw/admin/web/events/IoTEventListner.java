@@ -47,7 +47,7 @@ public class IoTEventListner {
 				+ event.getData().getClass().getTypeName());
 	}
 
-	@EventListener(condition = "#event.data.class.simpleName=='IoTMeasureData'")
+	@EventListener(condition = "#event.data.class.simpleName=='SensorData'")
 	@Order(3)
 	public void onApplicationEventIoTMeasureData(@NonNull IoTEvent event) {
 		
@@ -66,6 +66,9 @@ public class IoTEventListner {
 		    if (!now.isAfter(userEvt.getExpirationDate())) {
 		    	iotService.sendMessageToUser(userEvt.getUserName(), event.getData());
 		    	
+		    }
+		    else {
+		    	log.info("Data expired utente: "+userEvt + " data expired "+ userEvt.getExpirationDate());
 		    }
 
 		}
