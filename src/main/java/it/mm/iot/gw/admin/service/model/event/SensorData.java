@@ -1,9 +1,10 @@
 package it.mm.iot.gw.admin.service.model.event;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
+
+import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SensorData {
 
@@ -20,6 +21,7 @@ public class SensorData {
     private String idCoda;
 
     @JsonProperty("tz")
+    @JsonAlias("ua")
     private LocalDateTime dataEvento;
 
     @JsonProperty("t")
