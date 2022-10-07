@@ -84,8 +84,8 @@ public class UserService extends AbstractService {
         digitalTwin.getInfo().setDescrizione("Digital Twin");
         digitalTwin.setUri("/energy/digitaltwin");
         digitalTwin.setIcon("BusinessOutlined");
-        AssetBuildingInfo bi= assetFactory.loadBuildingInfo("DC_3M_R20");
-        bi.addBimModel(assetFactory.getDataResource("DC_3M_R20_MEP.wexBIM"));
+        AssetBuildingInfo bi= assetFactory.loadBuildingInfo("DC_3M_R20_MEP");
+        bi.addBimModel(assetFactory.getDataResource("DC_3M_R20.wexBIM"));
         digitalTwin.setBuildingInfo(bi);
         
 
