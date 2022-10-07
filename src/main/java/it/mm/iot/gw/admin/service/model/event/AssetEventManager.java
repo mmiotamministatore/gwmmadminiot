@@ -11,9 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import it.mm.iot.gw.admin.web.events.IoTEvent;
 import it.mm.iot.gw.admin.web.events.IoTMeasureData;
 import it.mm.iot.gw.admin.web.events.IoTSubscribeUser;
@@ -28,7 +25,7 @@ public class AssetEventManager {
 	private ApplicationEventPublisher publisher;
 
 	@Autowired
-	private ObjectMapper mapper;
+	SensorDataFactory sensorDataFactory;
 
 	private Map<String, AssetDataEvent> assets = new HashMap<>();
 
@@ -51,72 +48,32 @@ public class AssetEventManager {
 		publisher.publishEvent(eventIot);
 	}
 
-
 	public void sendMessageUserSubscribed(String data) {
-		try {
-			SensorData sensorData = mapper.readValue(data, SensorData.class);
-			// log.info("Dati Corretti: " + sensorData);
-			List<SensorMeasure> detailData = mapper.readValue(sensorData.getJsonMessage(),
-					mapper.getTypeFactory().constructCollectionType(List.class, SensorMeasure.class));
-			sensorData.setDetailData(detailData);
 
-			IoTMeasureData evtdata = new IoTMeasureData();
-			evtdata.setData(data);
-			evtdata.setDetailData(detailData);
-			IoTEvent<SensorData> eventIot = new IoTEvent<SensorData>(this, sensorData);
-			publisher.publishEvent(eventIot);
+		SensorData sensorData = sensorDataFactory.convertToSensorData(data);
+		// log.info("Dati Corretti: " + sensorData);
+		List<SensorMeasure> detailData = sensorDataFactory.convertToSensorMeasures(sensorData);
+		sensorData.setDetailData(detailData);
 
-			// publisher.publishCustomEvent(data);
-			// log.info("Dati Corretti: " + detailData);
-			// if(detailData instanceof List) {
-			//
-			// List<Map> lista=(List) detailData;
-			// for (Map message : lista) {
-			// log.info("Dati Corretti: "+message);
-			// }
-			// }
-			// else {
-			//
-			// }
+		IoTMeasureData evtdata = new IoTMeasureData();
+		evtdata.setData(data);
+		evtdata.setDetailData(detailData);
+		IoTEvent<SensorData> eventIot = new IoTEvent<SensorData>(this, sensorData);
+		publisher.publishEvent(eventIot);
 
-		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			log.info("Dati non corretti: " + data);
-			e.printStackTrace();
-		}
 	}
 
 	public void executeData(String data) {
-		try {
-			SensorData sensorData = mapper.readValue(data, SensorData.class);
-			// log.info("Dati Corretti: " + sensorData);
-			List<SensorMeasure> detailData = mapper.readValue(sensorData.getJsonMessage(),
-					mapper.getTypeFactory().constructCollectionType(List.class, SensorMeasure.class));
-			sensorData.setDetailData(detailData);
+		SensorData sensorData = sensorDataFactory.convertToSensorData(data);
+		// log.info("Dati Corretti: " + sensorData);
+		List<SensorMeasure> detailData = sensorDataFactory.convertToSensorMeasures(sensorData);
+		sensorData.setDetailData(detailData);
 
-			IoTMeasureData evtdata = new IoTMeasureData();
-			evtdata.setDetailData(detailData);
-			evtdata.setData(data);
-			IoTEvent<SensorData> eventIot = new IoTEvent<SensorData>(this, sensorData);
-			publisher.publishEvent(eventIot);
+		IoTMeasureData evtdata = new IoTMeasureData();
+		evtdata.setDetailData(detailData);
+		evtdata.setData(data);
+		IoTEvent<SensorData> eventIot = new IoTEvent<SensorData>(this, sensorData);
+		publisher.publishEvent(eventIot);
 
-			// publisher.publishCustomEvent(data);
-			// log.info("Dati Corretti: " + detailData);
-			// if(detailData instanceof List) {
-			//
-			// List<Map> lista=(List) detailData;
-			// for (Map message : lista) {
-			// log.info("Dati Corretti: "+message);
-			// }
-			// }
-			// else {
-			//
-			// }
-
-		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
-			log.info("Dati non corretti: " + data);
-			e.printStackTrace();
-		}
 	}
 }

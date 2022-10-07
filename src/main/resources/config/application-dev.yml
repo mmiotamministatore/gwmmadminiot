@@ -103,3 +103,8 @@ app:
       id: maticmind
       description: MATICMIND
       
+feign:
+  client:
+    config:
+      default:
+        loggerLevel: full      
