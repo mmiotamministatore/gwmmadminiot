@@ -83,12 +83,12 @@ public class AssetFactory {
 
         String dataModel = getDataResource(id + ".wexBIM");
         String dataJSON = getDataResource(id + ".json");
-        bim.setBimModel(dataModel);
-        bim.setBimData(dataJSON);
+        bim.addBimModel(dataModel);
+        bim.addBimData(dataJSON);
         return bim;
     }
 
-    private String getDataResource(String id) {
+    public String getDataResource(String id) {
         String data = null;
         try {
             InputStream is = getStreamData(id);

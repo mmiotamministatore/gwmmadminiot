@@ -14,6 +14,7 @@ import it.mm.iot.gw.admin.service.feign.dto.StatusResponseIoTEnum;
 import it.mm.iot.gw.admin.service.model.AssetFactory;
 import it.mm.iot.gw.admin.service.model.AssetTree;
 import it.mm.iot.gw.admin.service.model.TenantInfo;
+import it.mm.iot.gw.admin.service.model.asset.AssetBuildingInfo;
 import it.mm.iot.gw.admin.service.model.asset.Contenitore;
 import it.mm.iot.gw.admin.service.model.asset.Organizzazione;
 import it.mm.iot.gw.admin.service.model.asset.Pagina;
@@ -83,6 +84,11 @@ public class UserService extends AbstractService {
         digitalTwin.getInfo().setDescrizione("Digital Twin");
         digitalTwin.setUri("/energy/digitaltwin");
         digitalTwin.setIcon("BusinessOutlined");
+        AssetBuildingInfo bi= assetFactory.loadBuildingInfo("DC_3M_R20");
+        bi.addBimModel(assetFactory.getDataResource("DC_3M_R20_MEP.wexBIM"));
+        digitalTwin.setBuildingInfo(bi);
+        
+
         assetTree.addAsset(digitalTwin);
 
                 
@@ -101,7 +107,7 @@ public class UserService extends AbstractService {
         room11.getInfo().setDescrizione("Main Room");
         sito.addAsset(room11);
         
-        if(ritorno.getResult()==StatusResponseIoTEnum.SUCCESS) {
+        if(ritorno!=null && ritorno.getResult()==StatusResponseIoTEnum.SUCCESS) {
 
 			for (SensorData row : ritorno.getRows()) {
         		Sensore se = assetFactory.newInstance(Sensore.class);
