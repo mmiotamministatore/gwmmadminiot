@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 public class PeriodDecoded {
 
 	private PeriodFilterTypeEnum tipoFiltro;
+	private LocalDateTime ref;
 	private LocalDateTime from;
 	private LocalDateTime to;
 	private String decodedPeriod;
@@ -32,6 +33,12 @@ public class PeriodDecoded {
 	}
 	public void setDecodedPeriod(String decodedPeriod) {
 		this.decodedPeriod = decodedPeriod;
+	}
+	public LocalDateTime getRef() {
+		return ref;
+	}
+	public void setRef(LocalDateTime ref) {
+		this.ref = ref;
 	}
 
 }
