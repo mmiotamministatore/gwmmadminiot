@@ -5,6 +5,8 @@ import java.math.BigDecimal;
 public class PowerUsagePeriod {
 
 	private PeriodFilterTypeEnum periodType;
+	private PeriodDecoded periodDecoded;
+
 	private BigDecimal peakLoadSum;
 	private BigDecimal itLoadSum;
 	
@@ -64,4 +66,11 @@ public class PowerUsagePeriod {
 	public void setSumPue(BigDecimal sumPue) {
 		this.sumPue = sumPue;
 	}
+	public PeriodDecoded getPeriodDecoded() {
+		return periodDecoded;
+	}
+	public void setPeriodDecoded(PeriodDecoded periodDecoded) {
+		this.periodDecoded = periodDecoded;
+	}
+
 }

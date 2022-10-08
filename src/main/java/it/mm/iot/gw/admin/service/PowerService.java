@@ -19,6 +19,7 @@ import org.springframework.validation.annotation.Validated;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import it.mm.iot.gw.admin.service.dto.PeriodDecoded;
 import it.mm.iot.gw.admin.service.dto.PeriodFilter;
 import it.mm.iot.gw.admin.service.dto.PeriodFilterTypeEnum;
 import it.mm.iot.gw.admin.service.dto.PowerUsageOutput;
@@ -47,36 +48,45 @@ public class PowerService extends AbstractService {
 	private IotPlatformService iotPlatformService;
 
 	public PowerUsageOutput getPowerUsage(PowerUsageRequest powerUsageRequest) {
-
 		Map<PeriodFilterTypeEnum, PowerUsagePeriod> powerUsage = new HashMap<>();
 
-		LocalDateTime[] dts = convertPeriodFilter(powerUsageRequest.getPeriodFilter());
-
-		IoTPlatformOutputMessage ritorno = iotPlatformService.getPowerUsage(tenantId, dts[0], dts[1]);
-		if (ritorno != null && ritorno.getResult() == StatusResponseIoTEnum.SUCCESS) {
-
-			if (ritorno.getCount() > 0) {
-				powerUsage=loadHistoricalPowerUsage(ritorno.getRows(),
-						powerUsageRequest.getPeriodFilter().getReferenceDate(), new PeriodFilterTypeEnum[]{PeriodFilterTypeEnum.USERDEFINED});
-			}
-		}
+		powerUsage.putAll(getUserDefinedPowerUsage(powerUsageRequest));
+		powerUsage.putAll(getHistoricalPowerUsage(powerUsageRequest));
 
 		PowerUsageOutput powerUsageOutput = new PowerUsageOutput();
 		powerUsageOutput.setPowerUsage(powerUsage);
 		return powerUsageOutput;
 	}
-
-	public PowerUsageOutput getHistoricalPowerUsage(PowerUsageRequest powerUsageRequest) {
+	private Map<PeriodFilterTypeEnum, PowerUsagePeriod> getUserDefinedPowerUsage(PowerUsageRequest powerUsageRequest) {
 
 		Map<PeriodFilterTypeEnum, PowerUsagePeriod> powerUsage = new HashMap<>();
 
-		LocalDateTime[] dts = convertPeriodFilter(powerUsageRequest.getPeriodFilter());
+		PeriodDecoded dts = convertPeriodFilter(powerUsageRequest.getPeriodFilter());
 
-		IoTPlatformOutputMessage ritorno = iotPlatformService.getPowerUsage(tenantId, dts[0], dts[1]);
+		IoTPlatformOutputMessage ritorno = iotPlatformService.getPowerUsage(tenantId, dts.getFrom(), dts.getTo());
 		if (ritorno != null && ritorno.getResult() == StatusResponseIoTEnum.SUCCESS) {
 
 			if (ritorno.getCount() > 0) {
-				powerUsage=loadHistoricalPowerUsage(ritorno.getRows(),
+				powerUsage=loadHistoricalPowerUsage(ritorno.getRows(),dts,
+						powerUsageRequest.getPeriodFilter().getReferenceDate(), new PeriodFilterTypeEnum[]{PeriodFilterTypeEnum.USERDEFINED});
+			}
+		}
+
+
+		return powerUsage;
+	}
+
+	private Map<PeriodFilterTypeEnum, PowerUsagePeriod> getHistoricalPowerUsage(PowerUsageRequest powerUsageRequest) {
+
+		Map<PeriodFilterTypeEnum, PowerUsagePeriod> powerUsage = new HashMap<>();
+
+		PeriodDecoded dts = convertPeriodFilter(powerUsageRequest.getPeriodFilter());
+
+		IoTPlatformOutputMessage ritorno = iotPlatformService.getPowerUsage(tenantId, dts.getFrom(), dts.getTo());
+		if (ritorno != null && ritorno.getResult() == StatusResponseIoTEnum.SUCCESS) {
+
+			if (ritorno.getCount() > 0) {
+				powerUsage=loadHistoricalPowerUsage(ritorno.getRows(), dts,
 						powerUsageRequest.getPeriodFilter().getReferenceDate(), new PeriodFilterTypeEnum[]{
 								PeriodFilterTypeEnum.DAY,
 								PeriodFilterTypeEnum.WEEK,
@@ -85,9 +95,7 @@ public class PowerService extends AbstractService {
 			}
 		}
 
-		PowerUsageOutput powerUsageOutput = new PowerUsageOutput();
-		powerUsageOutput.setPowerUsage(powerUsage);
-		return powerUsageOutput;
+		return powerUsage;
 	}
 
 //	private PowerUsagePeriod loadPowerUsage(List<SensorData> rows, LocalDateTime referenceDate,
@@ -103,12 +111,19 @@ public class PowerService extends AbstractService {
 //		return pup;
 //	}
 
-	private Map<PeriodFilterTypeEnum,PowerUsagePeriod> loadHistoricalPowerUsage(List<SensorData> rows, LocalDateTime referenceDate,
+	private Map<PeriodFilterTypeEnum,PowerUsagePeriod> loadHistoricalPowerUsage(List<SensorData> rows, PeriodDecoded dts, LocalDateTime referenceDate,
 			PeriodFilterTypeEnum[] tipi) {
 
 		Map<PeriodFilterTypeEnum,PowerUsagePeriod> mapPowUsage=new HashMap<>();
 		for (PeriodFilterTypeEnum tipo : tipi) {
-			mapPowUsage.put(tipo, initializePup(tipo));
+			PeriodFilter periodFilter=new PeriodFilter();
+			periodFilter.setReferenceDate(referenceDate);
+			periodFilter.setTipoFiltro(tipo);
+			periodFilter.setUserDefFrom(dts.getFrom());
+			periodFilter.setUserDefTo(dts.getTo());
+
+			PeriodDecoded pded=convertPeriodFilter( periodFilter);
+			mapPowUsage.put(tipo, initializePup(pded));
 		}
 
 		LocalDate refData = referenceDate.toLocalDate();
@@ -123,9 +138,10 @@ public class PowerService extends AbstractService {
 		}
 		return mapPowUsage;
 	}
-	private PowerUsagePeriod initializePup(PeriodFilterTypeEnum periodFilterType) {
+	private PowerUsagePeriod initializePup(PeriodDecoded pded) {
 		PowerUsagePeriod pup = new PowerUsagePeriod();
-		pup.setPeriodType(periodFilterType);
+		pup.setPeriodType(pded.getTipoFiltro());
+		pup.setPeriodDecoded(pded);
 		pup.setMinValue(null);
 		pup.setAvgValue(null);
 		pup.setMaxValue(null);
@@ -232,8 +248,12 @@ public class PowerService extends AbstractService {
 		return list;
 	}
 
-	private LocalDateTime[] convertPeriodFilter(PeriodFilter periodFilter) {
+	private PeriodDecoded convertPeriodFilter(PeriodFilter periodFilter) {
+		PeriodDecoded pd=new PeriodDecoded();
+		pd.setTipoFiltro(periodFilter.getTipoFiltro());
+		
 		LocalDateTime[] dts = new LocalDateTime[2];
+		String dsPeriodo="";
 
 		LocalDateTime refDateTime = periodFilter.getReferenceDate();
 		LocalDate refDate = refDateTime.toLocalDate();
@@ -254,11 +274,13 @@ public class PowerService extends AbstractService {
 
 			break;
 		case MONTLY:
-			dts[0] = LocalDateTime.of(refDate.minusMonths(1), LocalTime.MIN);
+			dts[0] = LocalDateTime.of(refDate.withDayOfMonth(1), LocalTime.MIN);
+			dts[1] = LocalDateTime.of(refDate.withDayOfMonth(refDate.getMonth().length(refDate.isLeapYear())), LocalTime.MAX);
+			dts[0] = LocalDateTime.of(refDate, LocalTime.MIN);
 			dts[1] = LocalDateTime.of(refDate, LocalTime.MAX);
 			break;
 		case QUARTERLY:
-			dts[0] = LocalDateTime.of(refDate.minusMonths(4), LocalTime.MIN);
+			dts[0] = LocalDateTime.of(refDate.withDayOfMonth(1).minusMonths(2), LocalTime.MIN);
 			dts[1] = LocalDateTime.of(refDate, LocalTime.MAX);
 			break;
 		case YEAR:
@@ -275,8 +297,12 @@ public class PowerService extends AbstractService {
 			break;
 
 		}
+		
+		pd.setFrom(dts[0]);
+		pd.setTo(dts[1]);
+		pd.setDecodedPeriod(dsPeriodo);
 
-		return dts;
+		return pd;
 	}
 
 }

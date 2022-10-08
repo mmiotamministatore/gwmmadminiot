@@ -36,16 +36,4 @@ public class PowerResource extends AbstractRestService {
 				HttpStatus.OK);
 	}
 
-
-	@PostMapping("/historicalUsage")
-	// @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
-	public ResponseEntity<PowerUsageMessage<PowerUsageOutput>> getPowerHistoricalUsage(
-			@RequestBody PowerUsageRequest powerUsageRequest) {
-		PowerUsageOutput out = powerService.getHistoricalPowerUsage(powerUsageRequest);
-
-		return new ResponseEntity<>(
-				OutputMessageFactory.create(PowerUsageMessage.class, out, getOperationOutcomeAndRemove()),
-				HttpStatus.OK);
-	}
-
 }
