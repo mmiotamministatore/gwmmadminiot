@@ -8,7 +8,6 @@ public class PeriodDecoded {
 	private LocalDateTime ref;
 	private LocalDateTime from;
 	private LocalDateTime to;
-	private String decodedPeriod;
 	
 	public PeriodFilterTypeEnum getTipoFiltro() {
 		return tipoFiltro;
@@ -29,10 +28,7 @@ public class PeriodDecoded {
 		this.to = to;
 	}
 	public String getDecodedPeriod() {
-		return decodedPeriod;
-	}
-	public void setDecodedPeriod(String decodedPeriod) {
-		this.decodedPeriod = decodedPeriod;
+		return tipoFiltro.decodedValue();
 	}
 	public LocalDateTime getRef() {
 		return ref;

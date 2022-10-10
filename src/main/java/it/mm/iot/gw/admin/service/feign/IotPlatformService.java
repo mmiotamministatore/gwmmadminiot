@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import it.mm.iot.gw.admin.config.OAuthFeignConfigIoTPlatform;
@@ -31,6 +32,17 @@ public interface IotPlatformService {
 
 	@GetMapping(value = "/api/v1/analysis/power_usage", consumes = "application/json")
 	public IoTPlatformOutputMessage getPowerUsage(@RequestParam(name = "t", required = true) String tenant,
+			@RequestParam(name = "from", required = true) 
+	 		@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) 
+			LocalDateTime from,
+			@RequestParam(name = "to", required = true) 
+			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) 
+			LocalDateTime to);
+
+	@GetMapping(value = "/api/v1/analysis/power_usage_stats/{period}", consumes = "application/json")
+	public IoTPlatformOutputMessage getPowerUsageStat(
+			@PathVariable(name = "period", required = true) String period,
+			@RequestParam(name = "t", required = true) String tenant,
 			@RequestParam(name = "from", required = true) 
 	 		@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) 
 			LocalDateTime from,

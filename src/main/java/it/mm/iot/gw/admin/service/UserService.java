@@ -54,7 +54,7 @@ public class UserService extends AbstractService {
         infoUser.setAssetTree(assetTree);
         
         
-        IoTPlatformOutputMessage ritorno=iotPlatformService.getSensors(infoUser.getTenantInfo().getTenant(), null);
+        IoTPlatformOutputMessage ritorno= iotPlatformService.getSensors(infoUser.getTenantInfo().getTenant(), null);
 
         Pagina cruscotto = assetFactory.newInstance(Pagina.class);
         cruscotto.getInfo().setDescrizione("Cruscotto");
