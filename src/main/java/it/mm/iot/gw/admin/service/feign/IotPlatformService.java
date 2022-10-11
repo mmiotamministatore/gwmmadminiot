@@ -29,6 +29,17 @@ public interface IotPlatformService {
 	@GetMapping(value = "/api/v1/analysis/sensors", consumes = "application/json")
 	public IoTPlatformOutputMessage getSensors(@RequestParam(name = "t", required = true) String tenant,
 			@RequestParam(name = "s", required = false) String sensore);
+	
+	@GetMapping(value = "/api/v1/analysis/sensor/{s}/data", consumes = "application/json")
+	public IoTPlatformOutputMessage getSensorData(
+			@RequestParam(name = "t", required = true) String tenant,
+			@PathVariable(name = "s", required = true) String sensore,
+			@RequestParam(name = "from", required = true) 
+	 		@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) 
+			LocalDateTime from,
+			@RequestParam(name = "to", required = true) 
+			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) 
+			LocalDateTime to);
 
 	@GetMapping(value = "/api/v1/analysis/power_usage", consumes = "application/json")
 	public IoTPlatformOutputMessage getPowerUsage(@RequestParam(name = "t", required = true) String tenant,

@@ -25,6 +25,7 @@ import it.mm.iot.gw.admin.service.dto.PeriodFilterTypeEnum;
 import it.mm.iot.gw.admin.service.dto.PowerUsageOutput;
 import it.mm.iot.gw.admin.service.dto.PowerUsagePeriod;
 import it.mm.iot.gw.admin.service.dto.PowerUsageRequest;
+import it.mm.iot.gw.admin.service.dto.PowerUsageStoricOutput;
 import it.mm.iot.gw.admin.service.feign.IotPlatformService;
 import it.mm.iot.gw.admin.service.feign.dto.IoTPlatformOutputMessage;
 import it.mm.iot.gw.admin.service.feign.dto.StatusResponseIoTEnum;
@@ -222,9 +223,9 @@ public class PowerService extends AbstractService {
 		BigDecimal pueAvg = detailData.get("PUE_AVG");
 		BigDecimal pueMax = detailData.get("PUE_MAX");
 
-		pup.setMinValue(pueMin.setScale(3,RoundingMode.HALF_DOWN));
-		pup.setAvgValue(pueAvg.setScale(3,RoundingMode.HALF_DOWN));
-		pup.setMaxValue(pueMax.setScale(3,RoundingMode.HALF_DOWN));
+		pup.setMinValue(pueMin.setScale(3, RoundingMode.HALF_DOWN));
+		pup.setAvgValue(pueAvg.setScale(3, RoundingMode.HALF_DOWN));
+		pup.setMaxValue(pueMax.setScale(3, RoundingMode.HALF_DOWN));
 	}
 
 	private boolean isPeriodo(PeriodFilterTypeEnum tipoPeriodo, LocalDate refData, LocalDateTime dataEvento) {
@@ -356,6 +357,25 @@ public class PowerService extends AbstractService {
 		pd.setTo(dts[1]);
 
 		return pd;
+	}
+
+	public PowerUsageStoricOutput getPowerUsageStoric(PowerUsageRequest powerUsageRequest) {
+		Map<PeriodFilterTypeEnum, PowerUsagePeriod> powerUsage = new HashMap<>();
+
+		PeriodDecoded dts = convertPeriodFilter(powerUsageRequest.getPeriodFilter());
+
+		IoTPlatformOutputMessage ritorno = iotPlatformService.getPowerUsage(tenantId, dts.getFrom(), dts.getTo());
+		List<SensorData> lista = new ArrayList<SensorData>();
+		if (ritorno != null && ritorno.getResult() == StatusResponseIoTEnum.SUCCESS) {
+
+			for (SensorData row : ritorno.getRows()) {
+				lista.add(row);
+			}
+
+		}
+		PowerUsageStoricOutput puso = new PowerUsageStoricOutput();
+		puso.setSensorListData(lista);
+		return puso;
 	}
 
 }

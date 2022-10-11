@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import it.mm.iot.gw.admin.service.SensorService;
+import it.mm.iot.gw.admin.service.dto.DataListSensorRequest;
 import it.mm.iot.gw.admin.service.dto.InfoListSensorOutput;
 import it.mm.iot.gw.admin.service.dto.InfoListSensorRequest;
 import it.mm.iot.gw.admin.service.dto.InfoSensorOutput;
@@ -44,6 +45,17 @@ public class SensorResource extends AbstractRestService {
 	public ResponseEntity<InfoListSensorMessage<InfoListSensorOutput>> getInfosSensor(
 			@RequestBody InfoListSensorRequest infoListSensorRequest) {
 		InfoListSensorOutput out = sensorService.getListInfoSensor(infoListSensorRequest);
+
+		return new ResponseEntity<>(
+				OutputMessageFactory.create(InfoListSensorMessage.class, out, getOperationOutcomeAndRemove()),
+				HttpStatus.OK);
+	}
+
+	@PostMapping("/data")
+	// @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
+	public ResponseEntity<InfoListSensorMessage<InfoListSensorOutput>> getDataSensors(
+			@RequestBody DataListSensorRequest dataListSensorRequest) {
+		InfoListSensorOutput out = sensorService.getListDataSensor(dataListSensorRequest);
 
 		return new ResponseEntity<>(
 				OutputMessageFactory.create(InfoListSensorMessage.class, out, getOperationOutcomeAndRemove()),

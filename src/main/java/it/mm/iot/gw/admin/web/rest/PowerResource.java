@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 import it.mm.iot.gw.admin.service.PowerService;
 import it.mm.iot.gw.admin.service.dto.PowerUsageOutput;
 import it.mm.iot.gw.admin.service.dto.PowerUsageRequest;
+import it.mm.iot.gw.admin.service.dto.PowerUsageStoricOutput;
 import it.mm.iot.gw.admin.web.message.OutputMessageFactory;
 import it.mm.iot.gw.admin.web.rest.dto.PowerUsageMessage;
+import it.mm.iot.gw.admin.web.rest.dto.PowerUsageStoricMessage;
 
 @RestController
 @RequestMapping("/api/iotgw/v1/power")
@@ -33,6 +35,17 @@ public class PowerResource extends AbstractRestService {
 
 		return new ResponseEntity<>(
 				OutputMessageFactory.create(PowerUsageMessage.class, out, getOperationOutcomeAndRemove()),
+				HttpStatus.OK);
+	}
+
+	@PostMapping("/usagePueStoric")
+	// @PreAuthorize("hasAuthority(\"" + AuthoritiesConstants.ADMIN + "\")")
+	public ResponseEntity<PowerUsageStoricMessage<PowerUsageStoricOutput>> getPowerUsageStoric(
+			@RequestBody PowerUsageRequest powerUsageRequest) {
+		PowerUsageStoricOutput out = powerService.getPowerUsageStoric(powerUsageRequest);
+
+		return new ResponseEntity<>(
+				OutputMessageFactory.create(PowerUsageStoricMessage.class, out, getOperationOutcomeAndRemove()),
 				HttpStatus.OK);
 	}
 
