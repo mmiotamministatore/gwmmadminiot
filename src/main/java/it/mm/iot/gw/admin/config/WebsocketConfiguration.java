@@ -158,8 +158,8 @@ public class WebsocketConfiguration implements WebSocketMessageBrokerConfigurer 
                     ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;
                     attributes.put(IP_ADDRESS, servletRequest.getRemoteAddress());
                     HttpServletRequest httpServletRequest = servletRequest.getServletRequest();
-                    HttpSession session = httpServletRequest.getSession();
-                    attributes.put(SESSIONID, session.getId());
+                    ///HttpSession session = httpServletRequest.getSession();
+                    //attributes.put(SESSIONID, session.getId());
 
                     String token = httpServletRequest.getParameter(X_AUTH_TOKEN);
                     log.info("HTTP ParameterNames: " + ToStringBuilder.reflectionToString(httpServletRequest.getParameterNames()));

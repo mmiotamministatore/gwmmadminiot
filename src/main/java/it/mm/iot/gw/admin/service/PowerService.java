@@ -302,6 +302,14 @@ public class PowerService extends AbstractService {
 	}
 
 	private PeriodDecoded convertPeriodFilter(PeriodFilter periodFilter) {
+		if(periodFilter.getReferenceDate()==null){
+			periodFilter.setReferenceDate(LocalDateTime.now());
+		}
+		if(periodFilter.getTipoFiltro()==null){
+			periodFilter.setTipoFiltro(PeriodFilterTypeEnum.DAY);
+		}
+		
+		
 		PeriodDecoded pd = new PeriodDecoded();
 		pd.setTipoFiltro(periodFilter.getTipoFiltro());
 		pd.setRef(periodFilter.getReferenceDate());
@@ -366,7 +374,7 @@ public class PowerService extends AbstractService {
 
 		IoTPlatformOutputMessage ritorno = iotPlatformService.getPowerUsage(tenantId, dts.getFrom(), dts.getTo());
 		List<SensorData> lista = new ArrayList<SensorData>();
-		if (ritorno != null && ritorno.getResult() == StatusResponseIoTEnum.SUCCESS) {
+		if (ritorno != null && ritorno.getResult() == StatusResponseIoTEnum.SUCCESS && ritorno.getCount()>0) {
 
 			for (SensorData row : ritorno.getRows()) {
 				lista.add(row);
