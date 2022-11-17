@@ -74,8 +74,10 @@
         <openapi-generator-maven-plugin.version>6.0.1</openapi-generator-maven-plugin.version>
         <properties-maven-plugin.version>1.1.0</properties-maven-plugin.version>
         <sonar-maven-plugin.version>3.9.1.2184</sonar-maven-plugin.version>
-
         <!-- jhipster-needle-maven-property -->
+        <dockerfile-maven-plugin.version>1.3.4</dockerfile-maven-plugin.version>
+        <private.registry.url>hub.docker.com</private.registry.url>
+        
     </properties>
 
     <dependencyManagement>
@@ -737,6 +739,46 @@
 
                 </plugin>
                 <!-- jhipster-needle-maven-add-plugin-management -->
+                <plugin>
+					<groupId>com.spotify</groupId>
+					<artifactId>dockerfile-maven-plugin</artifactId>
+					<executions>
+						<execution>
+						  <id>default</id>
+						  <goals>
+							<goal>build</goal>
+						  </goals>
+						</execution>
+						<execution>
+						  <id>tag-latest</id>
+						  <goals>
+							<goal>tag</goal>
+						  </goals>
+						  <configuration>
+							<tag>latest</tag>
+						  </configuration>
+						</execution>
+						<execution>
+						  <id>tag-version</id>
+						  <goals>
+							<goal>tag</goal>
+							<goal>push</goal>
+						  </goals>
+						  <configuration>
+							<tag>${project.version}</tag>
+						  </configuration>
+						</execution>
+					</executions>
+					<configuration>
+						<serverId>docker-hub</serverId>
+<!-- 					      <registryUrl>https://index.docker.io/v1/</registryUrl>                     -->
+						<repository>mmiotamministatore/${project.artifactId}</repository>
+						<tag>${project.version}</tag>
+						<useMavenSettingsForAuth>true</useMavenSettingsForAuth>
+						<skip>false</skip>
+					</configuration>			        
+                </plugin>
+                
             </plugins>
         </pluginManagement>
     </build>

@@ -55,6 +55,8 @@ public class IoTEventListner {
 		// this.messagingTemplate.convertAndSendToUser(
 		// "biro", "/topic/iot/secure/data/user", args.get(0));
 		//String user = "4a3e1029-7943-49f6-9c21-8a32e83cbfd0";
+		//iotService.sendMessageToUser(user, event.getData());
+
 		LocalDateTime now = LocalDateTime.now();
 		for (Entry<String, IoTSubscribeUser> entry : userConn.entrySet()) {
 			IoTSubscribeUser userEvt=entry.getValue();
@@ -72,7 +74,6 @@ public class IoTEventListner {
 		    }
 
 		}
-		//iotService.sendMessageToUser(user, event.getData());
 
 	}
 
