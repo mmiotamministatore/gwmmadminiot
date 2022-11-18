@@ -3,7 +3,7 @@ package it.mm.iot.gw.admin.service.dto;
 import com.fasterxml.jackson.annotation.JsonValue;
 
 public enum PeriodFilterTypeEnum {
-	USERDEFINED, DAY, WEEK, MONTLY,QUARTERLY, YEAR, NULL;
+	USERDEFINED, NOW_2H, DAY, WEEK, MONTLY,QUARTERLY, YEAR, NULL;
 
 	public static PeriodFilterTypeEnum fromCode(String codeString) {
 		if (codeString == null || "".equals(codeString))
@@ -12,6 +12,8 @@ public enum PeriodFilterTypeEnum {
 			return USERDEFINED;
 		if ("D".equals(codeString))
 			return DAY;
+		if ("N".equals(codeString))
+			return NOW_2H;
 		if ("W".equals(codeString))
 			return WEEK;
 		if ("M".equals(codeString))
@@ -28,6 +30,8 @@ public enum PeriodFilterTypeEnum {
 		switch (this) {
 		case USERDEFINED:
 			return "U";
+		case NOW_2H:
+			return "N";
 		case DAY:
 			return "D";
 		case WEEK:
@@ -48,6 +52,8 @@ public enum PeriodFilterTypeEnum {
 		switch (this) {
 		case USERDEFINED:
 			return "user";
+		case NOW_2H:
+			return "now2h";
 		case DAY:
 			return "day";
 		case WEEK:

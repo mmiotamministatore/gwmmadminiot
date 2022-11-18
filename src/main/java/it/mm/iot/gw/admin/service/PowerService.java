@@ -51,6 +51,15 @@ public class PowerService extends AbstractService {
 		Map<PeriodFilterTypeEnum, PowerUsagePeriod> powerUsage = new HashMap<>();
 
 		powerUsage.putAll(getUserDefinedPowerUsage(powerUsageRequest));
+		//powerUsage.putAll(getHistoricalPowerUsage(powerUsageRequest));
+
+		PowerUsageOutput powerUsageOutput = new PowerUsageOutput();
+		powerUsageOutput.setPowerUsage(powerUsage);
+		return powerUsageOutput;
+	}
+	public PowerUsageOutput getHistoricalUsage(PowerUsageRequest powerUsageRequest) {
+		Map<PeriodFilterTypeEnum, PowerUsagePeriod> powerUsage = new HashMap<>();
+
 		powerUsage.putAll(getHistoricalPowerUsage(powerUsageRequest));
 
 		PowerUsageOutput powerUsageOutput = new PowerUsageOutput();
@@ -188,7 +197,7 @@ public class PowerService extends AbstractService {
 
 		Map<String, BigDecimal> detailData = sensorDataFactory.convertToSensorPowerMeasures(sensorData);
 		BigDecimal pue = detailData.get("PUE");
-		BigDecimal peakLoad = detailData.get("MM_E_Meter_SB_Power_Distribution");
+		BigDecimal peakLoad = detailData.get("MM_E_Meter_SB_Gen");
 		BigDecimal itLoad = detailData.get("MM_E_Meter_SB_IT_Load");
 		if (pue != null) {
 			if (pup.getMaxValue() == null || pue.compareTo(pup.getMaxValue()) > 0) {
@@ -233,6 +242,12 @@ public class PowerService extends AbstractService {
 		switch (tipoPeriodo) {
 		case USERDEFINED:
 			isPeriodo = true;
+			break;
+		case NOW_2H:
+			Long hoursBetween = ChronoUnit.HOURS.between(refData, dataEvento.toLocalDate());
+			if (hoursBetween <= 2) {
+				isPeriodo = true;
+			}
 			break;
 		case DAY:
 			if (refData.compareTo(dataEvento.toLocalDate()) == 0) {
@@ -325,6 +340,10 @@ public class PowerService extends AbstractService {
 			dts[0] = periodFilter.getUserDefFrom();
 			dts[1] = periodFilter.getUserDefTo();
 			break;
+		case NOW_2H:
+			dts[0] = refDateTime;
+			dts[1] = refDateTime.minus(2, ChronoUnit.HOURS);
+			break;
 		case DAY:
 			dts[0] = LocalDateTime.of(refDate, LocalTime.MIN);
 			dts[1] = LocalDateTime.of(refDate, LocalTime.MAX);
@@ -334,7 +353,6 @@ public class PowerService extends AbstractService {
 			// dts[1] = LocalDateTime.of(refDate, LocalTime.MAX);
 			dts[0] = LocalDateTime.of(refDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)), LocalTime.MIN);
 			dts[1] = LocalDateTime.of(refDate.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)), LocalTime.MAX);
-
 			break;
 		case MONTLY:
 			dts[0] = LocalDateTime.of(refDate.withDayOfMonth(1), LocalTime.MIN);
