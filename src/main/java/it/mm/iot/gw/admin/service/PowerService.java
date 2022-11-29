@@ -186,7 +186,13 @@ public class PowerService extends AbstractService {
 		pup.setMaxValue(null);
 
 		pup.setItLoadSum(BigDecimal.ZERO);
+		pup.setRowCountItLoad(0);
+		pup.setAvgValueItLoad(null);
+		
 		pup.setPeakLoadSum(BigDecimal.ZERO);
+		pup.setRowCountPeakLoad(0);
+		pup.setAvgValuePeakLoad(null);
+		
 		pup.setSumPue(BigDecimal.ZERO);
 		pup.setRowCount(0);
 		return pup;
@@ -211,11 +217,18 @@ public class PowerService extends AbstractService {
 			pup.setRowCount(pup.getRowCount() + 1);
 			pup.setAvgValue(pup.getSumPue().divide(BigDecimal.valueOf(pup.getRowCount()), 6, RoundingMode.HALF_UP));
 		}
+		
+		// Oltre alla somma calcoliamo anche i valori medi
 		if (peakLoad != null) {
 			pup.setPeakLoadSum(peakLoad.add(pup.getPeakLoadSum()));
+			pup.setRowCountPeakLoad(pup.getRowCountPeakLoad() + 1); 
+			pup.setAvgValuePeakLoad(pup.getPeakLoadSum().divide(BigDecimal.valueOf(pup.getRowCountPeakLoad()), 6, RoundingMode.HALF_UP));		
 		}
 		if (itLoad != null) {
 			pup.setItLoadSum(itLoad.add(pup.getItLoadSum()));
+			pup.setRowCountItLoad(pup.getRowCountItLoad() + 1); 
+			pup.setAvgValueItLoad(pup.getItLoadSum().divide(BigDecimal.valueOf(pup.getRowCountItLoad()), 6, RoundingMode.HALF_UP));
+
 		}
 		// {MM_E_Meter_SB_Power_Distribution=2.8735, MM_E_Meter_SB_IT_Load=10.91325,
 		// MM_E_Meter_SB_Gen=7.6535, MM_E_Meter_SB_Solar=8.36675,
